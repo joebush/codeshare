@@ -1,0 +1,10 @@
+{
+    "name": "CodeShare",
+    "version": "0.0.1",
+    "description": "Real time code sharing and chat tool",
+    "dependencies": {
+        "socket.io": "latest",
+        "express": "latest"
+    },
+    "author": "Jordan Bush & Matthew Sessions"
+}
