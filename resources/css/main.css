@@ -20,6 +20,11 @@ body {
     color: #ecf0f1;
     border-bottom: #7f8c8d solid 2px;
 }
+#leave_chat {
+    color: #ecf0f1;
+    padding: 5px;
+    width: 100%;
+}
 .user_entry {
     padding: 10px;
     border-bottom: #7f8c8d solid thin;
@@ -64,6 +69,7 @@ body {
 }
 .chat .code_message button {
     font-size: 1.5em;
+    margin: 0 10px;
 }
 #chat_input {
     margin-top: 20px;
@@ -79,7 +85,7 @@ body {
     border: #425d77 solid thin;
 }
 #chat_input button {
-    height: 100px;   
+    height: 100px;
     font-size: 2em;
     width: 100px;
 }
@@ -90,7 +96,7 @@ body {
     padding: 15px;
 }
 #submit_button {
-    text-align:center;
+    text-align: center;
 }
 #code_input_wrapper button {
     margin: 30px 0;
@@ -101,7 +107,7 @@ body {
     height: 100%;
     background-color: #ecf0f1;
     position: absolute;
-    z-index:3;
+    z-index: 3;
     left: 0;
     top: 0;
 }
@@ -109,12 +115,12 @@ body {
     width: 500px;
     height: 300px;
     margin-left: auto;
-    text-align:center;
+    text-align: center;
     margin-right: auto;
     margin-top: 100px;
 }
 #username_inner_wrapper {
-    margin-top: 50px;   
+    margin-top: 50px;
 }
 #username_inner_wrapper i {
     font-size: 5em;
@@ -126,5 +132,5 @@ body {
     top: -20px;
 }
 #username_wrapper button {
-    font-size: 1.5em;   
+    font-size: 1.5em;
 }
