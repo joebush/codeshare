@@ -46,7 +46,7 @@ var message = {
 
 io.sockets.on('connection', function (socket) {
 
-    socket.emit('message', { message: 'Welcome to the chat' });
+    socket.emit('message', { message: 'Welcome to the chat', username: "System", type: "message"});
 
 	// Client sends a message
     socket.on('send', function (data) {

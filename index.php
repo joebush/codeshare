@@ -1,18 +1,28 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Messaging Room</title>
+    <!-- INCLUDE CSS -->
     <link href="resources/css/main.css" rel="stylesheet" />
     <link href="resources/css/bootstrap.min.css" rel="stylesheet" />
     <link href="resources/css/codemirror.css" rel="stylesheet" />
     <link href="resources/css/theme/rubyblue.css" rel="stylesheet" />
-    <script src="resources/js/jquery-1.10.2.min.js"></script>
-    <script src="resources/js/codemirror.js"></script>
-    <script src="resources/js/javascript.js"></script>
-    <script src="resources/js/codeMirrorInit.js"></script>
+
+    <!-- INCLUDE LIBRARIES -->
+    <script src="resources/js/libs/jquery-1.10.2.min.js"></script>
+    <script src="resources/js/libs/codemirror.js"></script>
+    <script src="resources/js/libs/codeMirrorjs.js"></script>
+    <script src="resources/js/mylibs/codeMirrorInit.js"></script>
     <script src="node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.min.js"></script>
-    <script src="resources/js/socket.js"></script>
+
+    <!-- INCLUDE CHATE CODE -->
+    <script src="resources/js/mylibs/ChatSocket.js"></script>
+    <script src="resources/js/mylibs/Chat.js"></script>
+    <script src="resources/js/mylibs/Message.js"></script>
+    <script src="resources/js/mylibs/Login.js"></script>
 </head>
+
 <body>
     <section id='main_wrapper'>
         <aside id='user_list_wrapper'>
@@ -57,5 +67,18 @@
             </div>
         </section>
     </section>
+    <section id='welcome_screen'>
+        <div id='username_wrapper' class='well'>
+            <h1>Welcome to
+                <strong>CodeShare</strong>
+            </h1>
+            <div id='username_inner_wrapper'>
+                <i class='glyphicon glyphicon-user'></i>
+                <input id='username_input' type='text' placeholder="Username" />
+            </div>
+            <button class='btn btn-primary'>Enter <i class='glyphicon glyphicon-log-in'></i></button>
+        </div>
+    </section>
 </body>
+
 </html>
