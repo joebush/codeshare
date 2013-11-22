@@ -5,30 +5,39 @@ var ChatSocket = (function (window, document, $, undefined) {
     var receiveMessage = function (data) {
         Chat.newMessage(data);
     }
-    
+
     var receiveUserList = function (data) {
            User.newUserList(data);
     }
 
     return {
         sendMessage: function (message) {
-            socket.emit('send', message);
+            message.room_id = ROOM_ID;
+            socket.emit('chat:send', message);
         },
-        
+
         sendEnter: function(data) {
-            socket.emit('enter', data);  
+            data.room_id = ROOM_ID;
+            socket.emit('user:enter', data);
         },
-        
+
         sendLeave: function(username) {
-            socket.emit('leave', {"username":username});
+            socket.emit('user:leave', {"username":username, "room_id":ROOM_ID});
         },
-        
+
         startSockets: function () {
             socket = io.connect(SOCKET_URL);
-            socket.on('message', function (data) {
+            socket.on('chat:receive', function (data) {
                 receiveMessage(data);
             });
-            socket.on('userlist', function(data) {
+
+            socket.on('chat:history', function (data) {
+                $.each(data, function(i, message){
+					receiveMessage(message);
+				});
+            });
+
+            socket.on('user:list', function(data) {
                 receiveUserList(data);
             });
         }
