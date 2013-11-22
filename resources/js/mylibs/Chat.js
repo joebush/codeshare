@@ -16,11 +16,11 @@ var Chat = (function (window, document, $, undefined) {
     var createMessageHTML = function (message) {
         return "<div class='chat'><p class='user'>" + message.username + " has sent a message</p><p class='time'>" + message.time + "</p><p class='chat_message'>" + message.message + "</p></div>";
     }
-    
+
     var createCodeHTML = function (message) {
         var html = "<div class='chat code'><p class='user'>" + message.username + " has sent code</p>";
         html += "<p class='time'>" + message.time + "</p>";
-        html += "<p class='code_message'><button class='btn btn-primary'><i class='glyphicon glyphicon-cloud-download'></i><br>Download Code</button><button class='btn btn-primary'><i class='glyphicon glyphicon-indent-left'></i><br>Edit Code</button></p></div>";   
+        html += "<p class='code_message'><button class='btn btn-primary'><i class='glyphicon glyphicon-cloud-download'></i><br>Download Code</button><button class='btn btn-primary'><i class='glyphicon glyphicon-indent-left'></i><br>Edit Code</button></p></div>";
         return html;
     }
 
@@ -47,7 +47,7 @@ var Chat = (function (window, document, $, undefined) {
         var message = new Message(username, "code", code);
         if (validateMessage(message)) {
             messages.push(message);
-            ChatSocket.sendMessage(message);
+            ChatSocket.sendMessage(JSON.stringify(message));
         }
         $('.CodeMirror textarea').val('');
     }
@@ -60,7 +60,7 @@ var Chat = (function (window, document, $, undefined) {
                 messages.push(message);
                 var html = '';
                 if (message.type === "code") {
-                    html = createCodeHTML(message);   
+                    html = createCodeHTML(message);
                 } else {
                     html = createMessageHTML(message);
                 }

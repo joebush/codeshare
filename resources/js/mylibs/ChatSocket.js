@@ -29,6 +29,8 @@ var ChatSocket = (function (window, document, $, undefined) {
             socket = io.connect(SOCKET_URL);
             socket.on('chat:receive', function (data) {
                 receiveMessage(data);
+                // Scroll chat window down so message is visible
+                $('#chat_window').scrollTop($('#chat_window').prop("scrollHeight"));
             });
 
             socket.on('chat:history', function (data) {

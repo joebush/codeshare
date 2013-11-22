@@ -20,7 +20,7 @@ var Room = {
 
 		mysqlPool.getConnection(function(connErr, connection) {
 
-			var insertId = connection.query("INSERT INTO rooms (name, created_by, date_created) VALUES (?, ?, CURDATE())",
+			var insertId = connection.query("INSERT INTO rooms (name, created_by, date_created) VALUES (?, ?, NOW())",
 				[name, creator], function(queryErr, rows, fields) {
 				if (queryErr) throw queryErr;
 				//console.log('Saved room: ', rows);
@@ -167,6 +167,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('user:enter', function(data){
 		console.log('joining room: '+ data.room_id);
 		socket.username = data.username;
+		socket.room_id = data.room_id;
 		socket.join(data.room_id);
 
 		// Retrieve history of all past messages in this room
@@ -195,6 +196,13 @@ io.sockets.on('connection', function (socket) {
 
         // Broadcast updated userlist to everyone
         io.sockets.emit('user:list', {usernames:Users.get(data.room_id)});
+	});
+
+	// If client disconnects (closes browser window), remove them from user list
+	socket.on('disconnect', function(data){
+		//socket.leave( socket.room_id );
+        Users.remove(socket.room_id, socket.username);
+        io.sockets.emit('user:list', {usernames:Users.get(socket.room_id)});
 	});
 
 	// User sends a message
