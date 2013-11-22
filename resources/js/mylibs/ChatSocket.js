@@ -1,5 +1,5 @@
 var ChatSocket = (function (window, document, $, undefined) {
-    var SOCKET_URL = 'http://localhost:3700';
+    var SOCKET_URL = document.location.origin;
     var socket;
 
     var receiveMessage = function (data) {
@@ -12,7 +12,6 @@ var ChatSocket = (function (window, document, $, undefined) {
 
     return {
         sendMessage: function (message) {
-            message.room_id = ROOM_ID;
             socket.emit('chat:send', message);
         },
 

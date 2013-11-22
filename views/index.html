@@ -23,7 +23,9 @@
     <script src="resources/js/mylibs/User.js"></script>
 
     <!-- Room ID generated from server based on URL the user has entered -->
-	<script>ROOM_ID = <%=room_id%>;</script>
+	<script>
+        ROOM_ID = <%=room_id%>;
+    </script>
 </head>
 
 <body>
@@ -64,6 +66,7 @@
             <h1>Welcome to
                 <strong>CodeShare</strong>
             </h1>
+            <h3>Entering Room: <%=room_name%></h3>
             <div id='username_inner_wrapper'>
                 <i class='glyphicon glyphicon-user'></i>
                 <input id='username_input' type='text' placeholder="Username" />
