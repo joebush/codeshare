@@ -4,6 +4,11 @@ var Login = (function (window, document, $, undefined) {
         $('#username_wrapper button').click(function () {
             logUserIn();
         });
+        $('#username_input').keyup(function(key) {
+            if (key==32) {
+                logUserIn();   
+            }
+        });
     }
 
     var logUserIn = function () {

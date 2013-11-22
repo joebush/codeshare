@@ -20,10 +20,6 @@ var ChatSocket = (function (window, document, $, undefined) {
             socket.emit('user:enter', data);
         },
 
-        sendLeave: function(username) {
-            socket.emit('user:leave', {"username":username, "room_id":ROOM_ID});
-        },
-
         startSockets: function () {
             socket = io.connect(SOCKET_URL);
             socket.on('chat:receive', function (data) {

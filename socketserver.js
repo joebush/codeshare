@@ -190,20 +190,6 @@ io.sockets.on('connection', function (socket) {
         });
     });
 
-    // User leaves chat room
-    socket.on('user:leave', function (data) {
-        console.log('leaving room: ' + data.room_id);
-        socket.leave(data.room_id);
-
-        // Remove user from list
-        Users.remove(data.room_id, data.username);
-
-        // Broadcast updated userlist to everyone
-        io.sockets.emit('user:list', {
-            usernames: Users.get(data.room_id)
-        });
-    });
-
     // If client disconnects (closes browser window), remove them from user list
     socket.on('disconnect', function (data) {
         //socket.leave( socket.room_id );

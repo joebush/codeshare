@@ -20,11 +20,6 @@ body {
     color: #ecf0f1;
     border-bottom: #7f8c8d solid 2px;
 }
-#leave_chat {
-    color: #ecf0f1;
-    padding: 5px;
-    width: 100%;
-}
 .user_entry {
     padding: 10px;
     border-bottom: #7f8c8d solid thin;
