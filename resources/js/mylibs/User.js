@@ -7,7 +7,7 @@ var User = (function (window, document, $, undefined) {
             logUserIn();
         });
         $('#username_input').keyup(function (key) {
-            if (key == 32) {
+            if (key.which == 13) {
                 logUserIn();
             }
         });

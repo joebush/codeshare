@@ -4,11 +4,13 @@ body {
     height: 100%;
 }
 #main_wrapper {
-    width: 1200px;
+    min-width: 1000px;
+    width: 100%;
     height: 100%;
 }
 #user_list_wrapper {
-    width: 175px;
+    max-width: 175px;
+    width: 10%;
     height: 100%;
     float: left;
     background-color: #2c3e50;
@@ -29,15 +31,15 @@ body {
     color: #ecf0f1;
 }
 #chat_wrapper {
-    width: 550px;
+    width: 45%;
     height: 100%;
     float: left;
     padding: 15px;
     overflow: hidden;
 }
 #chat_window {
-    width: 550px;
-    height: 475px;
+    min-height: 475px;
+    height: 80%;
     overflow-y: scroll;
 }
 .chat {
@@ -68,12 +70,12 @@ body {
 }
 #chat_input {
     margin-top: 20px;
-    width: 520px;
+    width: 100%;
     height: 100px;
 }
 #message {
-    min-width: 410px;
-    max-width: 410px;
+    min-width: 78%;
+    max-width: 78%;
     min-height: 100px;
     max-height: 100px;
     outline: none;
@@ -86,7 +88,7 @@ body {
 }
 #code_input_wrapper {
     height: 100%;
-    width: 475px;
+    width: 45%;
     overflow: hidden;
     padding: 15px;
 }
@@ -116,15 +118,24 @@ body {
 #username_inner_wrapper {
     margin-top: 50px;
 }
-#username_inner_wrapper i, #password_inner_wrapper i {
+#username_inner_wrapper i,
+#password_inner_wrapper i {
     font-size: 5em;
 }
-#username_input, #password_input {
+#username_input,
+#password_input {
     font-size: 2em;
     outline: none;
     position: relative;
     top: -20px;
 }
 #username_wrapper button {
+    font-size: 1.5em;
+}
+.modal-body i {
+    float: right;
+    font-size: 8em;
+}
+#new_room_password {
     font-size: 1.5em;
 }

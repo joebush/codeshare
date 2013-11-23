@@ -3,9 +3,9 @@
 .CodeMirror {
     /* Set height, width, borders, and global font properties here */
     font-family: monospace;
-    height: 300px;
-    width: 445px;
-    height: 475px;
+    min-height: 475px;
+    height: 80%;
+    width: 100%;
 }
 .CodeMirror-scroll {
     /* Set scrolling behaviour here */
