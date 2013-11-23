@@ -193,18 +193,27 @@ app.get('/*', function (request, response) {
     if (!urlParts[1]) {
         urlParts[1] = '';
     }
+    //if the url is download
     if (urlParts[1] === "Download") {
         //server a download of the message
         var message_id = urlParts[2];
         Message.get(message_id, function (message) {
             if (message) {
                 var filename = "temp/" + message.id + ".code";
+                //create a temporary file to allow the user to download
                 fs.writeFile(filename, message.message, function (err) {
                     if (err) {
                         console.log(err);
                     } else {
-                        console.log("worked");
-                        response.download(filename);
+                        //send the download response
+                        response.download(filename, function(err) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                //remove the temporary file
+                                fs.unlink(filename);
+                            }
+                        });
                     }
                 });
             }
