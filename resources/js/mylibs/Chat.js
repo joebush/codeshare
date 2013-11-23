@@ -11,6 +11,11 @@ var Chat = (function (window, document, $, undefined) {
         $('#code_input_wrapper button').click(function () {
             sendCode();
         });
+        $('#message').keyup(function (key) {
+            if (key.which == 13) {
+                sendMessage();
+            }
+        });
     }
 
     var sendMessage = function () {
@@ -36,10 +41,12 @@ var Chat = (function (window, document, $, undefined) {
     return {
 
         newMessage: function (data) {
-            var message = new Message(data.username, data.type, data.message);
+            var message = new Message(data.username, data.type, data.message, data.id);
             if (message.validateMessage()) {
                 messages.push(message);
                 message.appendNewMessage();
+                // Scroll chat window down so message is visible
+                $('#chat_window').scrollTop($('#chat_window').prop("scrollHeight"));
             } else {
                 console.log("There was an error: " + data);
             }

@@ -64,7 +64,7 @@ body {
     clear: both;
     text-align: center;
 }
-.chat .code_message button {
+.chat .code_message .btn {
     font-size: 1.5em;
     margin: 0 10px;
 }

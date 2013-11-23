@@ -1,9 +1,10 @@
 var express = require("express");
 var mysql = require("mysql");
 var bcrypt = require("bcrypt");
+var fs = require('fs');
 var app = express();
 var port = 3700;
-var io = require('socket.io').listen(app.listen(port));
+var io = require('socket.io').listen(app.listen(port, "0.0.0.0"), "0.0.0.0");
 
 var mysqlPool = mysql.createPool({
     host: 'localhost',
@@ -98,7 +99,7 @@ var Room = {
         });
     },
 
-    // Validate room name
+    // Validate room name$
     validate: function (name, password) {
         return true;
     }
@@ -107,15 +108,32 @@ var Room = {
 var Message = {
 
     // Save the message to MySQL
-    save: function (room_id, message, type, username, ip) {
+    save: function (room_id, message, type, username, ip, callback) {
 
         mysqlPool.getConnection(function (connErr, connection) {
 
             connection.query("INSERT INTO messages (room_id, message, type, username, ip_address, date_created) VALUES (?, ?, ?, ?, ?, NOW())", [room_id, message, type, username, ip], function (queryErr, rows, fields) {
                 if (queryErr) throw queryErr;
                 //console.log('Saved message: ', rows);
+                if (typeof (callback) === "function") {
+                    callback(rows.insertId);
+                }
             });
 
+            connection.release();
+        });
+    },
+
+    get: function (message_id, callback) {
+        mysqlPool.getConnection(function (connErr, connection) {
+            connection.query("SELECT * FROM messages WHERE id = ?", [message_id], function (queryErr, rows, fields) {
+                if (queryErr) throw queryErr;
+                if (rows[0]) {
+                    if (typeof (callback) === "function") {
+                        callback(rows[0]);
+                    }
+                }
+            });
             connection.release();
         });
     },
@@ -171,40 +189,60 @@ app.engine('html', require('ejs').renderFile);
 app.get('/*', function (request, response) {
 
     // Split up URL to determine room name
-    var urlParts = request.url.split('/', 2);
+    var urlParts = request.url.split('/', 3);
     if (!urlParts[1]) {
         urlParts[1] = '';
     }
-    var roomName = urlParts[1];
+    if (urlParts[1] === "Download") {
+        //server a download of the message
+        var message_id = urlParts[2];
+        Message.get(message_id, function (message) {
+            if (message) {
+                var filename = "temp/" + message.id + ".code";
+                fs.writeFile(filename, message.message, function (err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log("worked");
+                        response.download(filename);
+                    }
+                });
+            }
+        });
 
-    // Retrieve room from database
-    Room.get(roomName, function (room) {
+    } else {
 
-        // If room doesn't exist, create it
-        if (!room) {
-            Room.save(roomName, 'Jordan', function (roomId) {
+        var roomName = urlParts[1];
+
+        // Retrieve room from database
+        Room.get(roomName, function (room) {
+
+            // If room doesn't exist, create it
+            if (!room) {
+                Room.save(roomName, 'Jordan', function (roomId) {
+                    response.render('index.html', {
+                        room_id: roomId,
+                        room_name: roomName,
+                        new_room: true,
+                        passwordProtected: false
+                    }, function (err, html) {
+                        response.send(html);
+                    });
+                });
+
+            } else {
+                var roomId = room.id;
                 response.render('index.html', {
                     room_id: roomId,
                     room_name: roomName,
-                    new_room: true,
-                    passwordProtected: false
+                    new_room: false,
+                    passwordProtected: (room.password != "") ? true : false
                 }, function (err, html) {
                     response.send(html);
                 });
-            });
-
-        } else {
-            var roomId = room.id;
-            response.render('index.html', {
-                room_id: roomId,
-                room_name: roomName,
-                new_room: false,
-                passwordProtected: (room.password != "") ? true : false
-            }, function (err, html) {
-                response.send(html);
-            });
-        }
-    });
+            }
+        });
+    }
 });
 
 // Handle socket (chat) connections
@@ -258,7 +296,7 @@ io.sockets.on('connection', function (socket) {
 
     // User sends a message
     socket.on('chat:send', function (data) {
-
+        console.log(JSON.stringify(data));
         // Validate message
         if (!Message.validate(data.room_id, data.message, data.type, data.username)) {
             console.log(data);
@@ -267,10 +305,13 @@ io.sockets.on('connection', function (socket) {
         var ip_address = socket.handshake.address.address;
 
         // Save the message to database
-        Message.save(data.room_id, data.message, data.type, socket.username, ip_address);
-
-        // Broadcast message
-        io.sockets. in (data.room_id).emit('chat:receive', data);
+        Message.save(data.room_id, data.message, data.type, socket.username, ip_address, function (message_id) {
+            if (data.type == "code") {
+                data.id = message_id;
+            }
+            // Broadcast message
+            io.sockets. in (data.room_id).emit('chat:receive', data);
+        });
     });
 
 

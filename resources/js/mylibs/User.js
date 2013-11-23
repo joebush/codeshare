@@ -6,7 +6,7 @@ var User = (function (window, document, $, undefined) {
         $('#username_wrapper button').click(function () {
             logUserIn();
         });
-        $('#username_input').keyup(function (key) {
+        $('#username_input, #password_input').keyup(function (key) {
             if (key.which == 13) {
                 logUserIn();
             }
@@ -77,8 +77,7 @@ var User = (function (window, document, $, undefined) {
                 backdrop: "static"
             });
             bindNewRoomEvents();
-        }
-        if (!PASSWORD_PROTECTED) {
+        } else if (!PASSWORD_PROTECTED) {
             $('#password_inner_wrapper').hide();
         }
         bindEvents();

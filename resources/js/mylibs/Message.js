@@ -1,5 +1,6 @@
-function Message(username, type, message) {
-
+function Message(username, type, message, id) {
+    
+    this.id = id;
     this.room_id = ROOM_ID;
     this.username = username;
     this.type = type;
@@ -22,7 +23,7 @@ Message.prototype.createCodeElement = function () {
     element.className = "chat";
     element.innerHTML = "<p class='user'>" + this.username + " has sent code</p>";
     element.innerHTML += "<p class='time'>" + this.time + "</p>";
-    element.innerHTML += "<p class='code_message'><button class='btn btn-primary'><i class='glyphicon glyphicon-cloud-download'></i><br>Download Code</button><button class='btn btn-primary edit_code'><i class='glyphicon glyphicon-indent-left'></i><br>Edit Code</button></p></div>";
+    element.innerHTML += "<p class='code_message'><a href='/Download/" + this.id + ".code' class='btn btn-primary'><i class='glyphicon glyphicon-cloud-download'></i><br>Download Code</a><button class='btn btn-primary edit_code'><i class='glyphicon glyphicon-indent-left'></i><br>Edit Code</button></p></div>";
     this.element = element;
 }
 
