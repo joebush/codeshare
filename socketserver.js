@@ -84,8 +84,10 @@ var Room = {
                 var room;
                 if (rows[0]) {
                     room = rows[0];
-                    if (!bcrypt.compareSync(password, room.password)) {
-                        room = false;
+                    if (password != "") {
+                        if (!bcrypt.compareSync(password, room.password)) {
+                            room = false;
+                        }
                     }
                 } else {
                     room = false;

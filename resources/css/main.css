@@ -116,10 +116,10 @@ body {
 #username_inner_wrapper {
     margin-top: 50px;
 }
-#username_inner_wrapper i {
+#username_inner_wrapper i, #password_inner_wrapper i {
     font-size: 5em;
 }
-#username_input {
+#username_input, #password_input {
     font-size: 2em;
     outline: none;
     position: relative;
