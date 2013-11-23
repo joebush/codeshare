@@ -6,22 +6,21 @@ var User = (function (window, document, $, undefined) {
         $('#username_wrapper button').click(function () {
             logUserIn();
         });
-        $('#leave_chat').click(function () {
-            logUserOut();
+        $('#username_input').keyup(function (key) {
+            if (key == 32) {
+                logUserIn();
+            }
         });
     }
 
     var logUserIn = function () {
         username = $('#username_input').val();
-
+        var password = $('#password_input').val();
         if (validateUsername()) {
             ChatSocket.sendEnter({
-                "username": username
+                "username": username,
+                "password": password
             });
-            $('#welcome_screen').fadeOut(500, function () {
-                $(this).remove();
-            });
-            Chat.initializeChat(username);
         } else {
             showEnterError();
         }
@@ -48,7 +47,40 @@ var User = (function (window, document, $, undefined) {
         $('#user_list').html(html);
     }
 
+    var bindNewRoomEvents = function () {
+        $('#create_private_button').click(function () {
+            sendCreatePrivate();
+        });
+        $('#create_public_button').click(function () {
+            $('#password_inner_wrapper').hide();
+            $('#myModal').modal('hide');
+        });
+    }
+
+    var sendCreatePrivate = function () {
+        var password = $('#new_room_password').val();
+        if (password == "" || password == null) {
+            showEnterError();
+        } else {
+            ChatSocket.sendCreatePrivate(password);
+            $('#myModal').modal('hide');
+        }
+    }
+
+    var displayLoginError = function () {
+        $('#create_private_button').removeClass('btn-primary').addClass('btn-warning');
+    }
+
     $(document).ready(function () {
+        if (NEW_ROOM) {
+            $('#myModal').modal({
+                backdrop: "static"
+            });
+            bindNewRoomEvents();
+        }
+        if (!PASSWORD_PROTECTED) {
+            $('#password_inner_wrapper').hide();
+        }
         bindEvents();
         ChatSocket.startSockets();
     });
@@ -57,6 +89,17 @@ var User = (function (window, document, $, undefined) {
 
         newUserList: function (data) {
             updateUserList(data.usernames);
+        },
+
+        loginResponse: function (data) {
+            if (data.response) {
+                $('#welcome_screen').fadeOut(500, function () {
+                    $(this).remove();
+                });
+                Chat.initializeChat(username);
+            } else {
+                showEnterError();
+            }
         }
     }
 

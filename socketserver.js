@@ -1,5 +1,6 @@
 var express = require("express");
 var mysql = require("mysql");
+var bcrypt = require("bcrypt");
 var app = express();
 var port = 3700;
 var io = require('socket.io').listen(app.listen(port));
@@ -12,6 +13,7 @@ var mysqlPool = mysql.createPool({
 });
 
 var users = [];
+
 
 var Room = {
 
@@ -54,6 +56,41 @@ var Room = {
                 //console.log('Room messages: ', rows);
 
                 callback(rows);
+            });
+            connection.release();
+        });
+    },
+
+    //make a room private
+    makePrivate: function (room_id, password, callback) {
+        mysqlPool.getConnection(function (connErr, connection) {
+            console.log(password);
+            connection.query("UPDATE rooms SET password = ? WHERE id = ?", [password, room_id], function (queryErr) {
+                if (queryErr) throw queryErr;
+
+                if (typeof (callback) === "function") {
+                    callback();
+                }
+            });
+            connection.release();
+        });
+    },
+
+    //authenticate someone against the rooms password
+    authenticate: function (room_id, password, callback) {
+        mysqlPool.getConnection(function (connErr, connection) {
+            connection.query("SELECT * FROM rooms WHERE id = ?", [room_id], function (queryErr, rows) {
+                if (queryErr) throw queryErr;
+                var room;
+                if (rows[0]) {
+                    room = rows[0];
+                    if (!bcrypt.compareSync(password, room.password)) {
+                        room = false;
+                    }
+                } else {
+                    room = false;
+                }
+                callback(room);
             });
             connection.release();
         });
@@ -146,7 +183,9 @@ app.get('/*', function (request, response) {
             Room.save(roomName, 'Jordan', function (roomId) {
                 response.render('index.html', {
                     room_id: roomId,
-                    room_name: roomName
+                    room_name: roomName,
+                    new_room: true,
+                    passwordProtected: false
                 }, function (err, html) {
                     response.send(html);
                 });
@@ -156,7 +195,9 @@ app.get('/*', function (request, response) {
             var roomId = room.id;
             response.render('index.html', {
                 room_id: roomId,
-                room_name: roomName
+                room_name: roomName,
+                new_room: false,
+                passwordProtected: (room.password != "") ? true : false
             }, function (err, html) {
                 response.send(html);
             });
@@ -166,27 +207,41 @@ app.get('/*', function (request, response) {
 
 // Handle socket (chat) connections
 io.sockets.on('connection', function (socket) {
-
     // User enters chat room
     socket.on('user:enter', function (data) {
-        console.log('joining room: ' + data.room_id);
-        socket.username = data.username;
-        socket.room_id = data.room_id;
-        socket.join(data.room_id);
+        //authenticate user with their provided password
+        Room.authenticate(data.room_id, data.password, function (room) {
+            //if the password was correct proceed
+            if (room != false) {
+                console.log('joining room: ' + data.room_id);
+                socket.username = data.username;
+                socket.room_id = data.room_id;
+                socket.join(data.room_id);
 
-        // Retrieve history of all past messages in this room
-        Room.get_messages(data.room_id, function (messages) {
+                // Retrieve history of all past messages in this room
+                Room.get_messages(data.room_id, function (messages) {
 
-            // Send chat history only to this user
-            io.sockets.socket(socket.id).emit('chat:history', messages);
-        });
+                    // Send chat history only to this user
+                    io.sockets.socket(socket.id).emit('chat:history', messages);
+                });
 
-        // Add this user to list
-        Users.add(data.room_id, data.username);
+                // Add this user to list
+                Users.add(data.room_id, data.username);
 
-        // Broadcast the new user list to everyone
-        io.sockets.emit('user:list', {
-            usernames: Users.get(data.room_id)
+                // Broadcast the new user list to everyone
+                io.sockets.emit('user:list', {
+                    usernames: Users.get(data.room_id)
+                });
+                //let them know they were succesful
+                io.sockets.socket(socket.id).emit('user:enter:response', {
+                    response: true
+                });
+            } else {
+                //let them know it failed
+                io.sockets.socket(socket.id).emit('user:enter:response', {
+                    response: false
+                });
+            }
         });
     });
 
@@ -214,5 +269,20 @@ io.sockets.on('connection', function (socket) {
 
         // Broadcast message
         io.sockets. in (data.room_id).emit('chat:receive', data);
+    });
+
+
+    //User sends wanting to make the room he just created private
+    socket.on('room:private', function (data) {
+        //Validate Password
+        if (data.password == null || data.password == "") {
+            console.log(data);
+            return false;
+        }
+        //hash the password
+        var salt = bcrypt.genSaltSync(10);
+        var hash = bcrypt.hashSync(data.password, salt);
+        console.log(hash);
+        Room.makePrivate(data.room_id, hash);
     });
 });

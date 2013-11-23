@@ -15,6 +15,7 @@
     <script src="resources/js/libs/codeMirrorjs.js"></script>
     <script src="resources/js/mylibs/codeMirrorInit.js"></script>
     <script src="resources/js/socket-io/socket.io.min.js"></script>
+    <script src="resources/js/libs/bootstrap.min.js"></script>
 
     <!-- INCLUDE CHATE CODE -->
     <script src="resources/js/mylibs/ChatSocket.js"></script>
@@ -23,8 +24,10 @@
     <script src="resources/js/mylibs/User.js"></script>
 
     <!-- Room ID generated from server based on URL the user has entered -->
-	<script>
-        ROOM_ID = <%=room_id%>;
+    <script>
+        ROOM_ID = <%= room_id %> ;
+        NEW_ROOM = <%= new_room %> ;
+        PASSWORD_PROTECTED = <%= passwordProtected %> ;
     </script>
 </head>
 
@@ -62,16 +65,46 @@
             <h1>Welcome to
                 <strong>CodeShare</strong>
             </h1>
-            <h3>Entering Room: <%=room_name%></h3>
+            <h3 id="enter_room">Entering Room:
+                <%=room_name%>
+            </h3>
             <div id='username_inner_wrapper'>
                 <i class='glyphicon glyphicon-user'></i>
                 <input id='username_input' type='text' placeholder="Username" />
+            </div>
+            <div id='password_inner_wrapper'>
+                <i class='glyphicon glyphicon-asterisk'></i>
+                <input id='password_input' type='text' placeholder="Password" />
             </div>
             <button class='btn btn-primary'>Enter
                 <i class='glyphicon glyphicon-log-in'></i>
             </button>
         </div>
     </section>
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Create Room:
+                        <%=room_name%>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <h4>You have just created a new room.</h4>
+                    <p>Please provide a password</p>
+                    <input type='password' id='new_room_password' placeholder="Password" />
+                </div>
+                <div class="modal-footer">
+                    <button id="create_private_button" type="button" class="btn btn-primary">Create Private Room</button>
+                    <button id="create_public_button" type="button" class="btn btn-default">Create Public Room</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+
 </body>
 
 </html>

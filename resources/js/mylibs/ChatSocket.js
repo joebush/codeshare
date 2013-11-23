@@ -19,6 +19,10 @@ var ChatSocket = (function (window, document, $, undefined) {
             data.room_id = ROOM_ID;
             socket.emit('user:enter', data);
         },
+        
+        sendCreatePrivate: function(password) {
+            socket.emit('room:private', {room_id : ROOM_ID, password : password});
+        },
 
         startSockets: function () {
             socket = io.connect(SOCKET_URL);
@@ -36,6 +40,9 @@ var ChatSocket = (function (window, document, $, undefined) {
 
             socket.on('user:list', function(data) {
                 receiveUserList(data);
+            });
+            socket.on('user:enter:response', function(data) {
+                User.loginResponse(data); 
             });
         }
     }
